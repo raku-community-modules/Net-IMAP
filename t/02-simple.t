@@ -30,5 +30,5 @@ use Net::IMAP;
 
 my $imap = Net::IMAP.new(:server('foo.com'), :socket(IMAPSocket));
 
-ok $imap ~~ Net::IMAP::Simple, 'Is raw object';
+ok $imap ~~ Net::IMAP::Simple, 'Is simple object';
 ok $imap.logout, 'Can log out';
