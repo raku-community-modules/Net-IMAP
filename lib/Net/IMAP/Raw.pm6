@@ -1,3 +1,8 @@
+class Net::IMAP::Raw;
+
+has $.conn is rw;
+has $.reqcode is rw = 'aaaa';
+
 method get-response($code?){
     my $line = $.conn.get;
     return $line unless $code;
