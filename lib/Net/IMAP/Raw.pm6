@@ -74,11 +74,30 @@ method lsub($ref, $mbox) {
 }
 
 method status($mbox, $type) {
-    return self.send("STATUS $mbox $type");
+    return self.send("STATUS $mbox ({ $type.join(' ') })");
 }
 
-method append($name, $flags, $datetime, $message) {
-    die "NYI";
+method append($name, $message, :$flags, :$datetime) {
+    my $code = $.reqcode;
+    $.reqcode = $.reqcode.succ;
+    my $string = "APPEND $name";
+    if $flags {
+        $string ~= " ({ $flags.join(' ') })";
+    }
+    if $datetime {
+        $string ~= " $datetime";
+    }
+    $.conn.send($code ~ " $string\r\n");
+    my $resp = self.get-response;
+    if $resp ~~ m:i/^\+\s/ {
+        $.conn.send($message);
+        return self.get-response($code);
+    } else {
+        unless $resp ~~ /^$code/ {
+            $resp ~= "\r\n" ~ self.get-response($code);
+        }
+        return $resp;
+    }
 }
 
 method check {
@@ -93,22 +112,61 @@ method expunge {
     return self.send("EXPUNGE");
 }
 
-method search(*@args) {
-    die "NYI";
+method uid-search(*%query) {
+    return self.send("UID SEARCH "~self!generate-search-query(%query));
+}
+method search(*%query) {
+    return self.send("SEARCH "~self!generate-search-query(%query));
+}
+method !generate-search-query(%query) {
+    my $output;
+    if %query<charset> {
+        $output ~= " CHARSET %query<charset>";
+    }
+    for %query.kv -> $k, $v {
+        next unless $v;
+        given $k {
+            when 'seq' {
+                $output ~= " $v";
+            }
+            when 'not' {
+                $output ~= " NOT ({ self!generate-search-query($v) })";
+            }
+            when 'or' {
+                $output ~= " OR ({ self!generate-search-query($v[0]) })";
+                $output ~= " ({ self!generate-search-query($v[1]) })";
+            }
+            when <all answered deleted draft flagged new old recent seen unanswered undeleted undraft unflagged unseen> {
+                $output ~= " " ~ $k.uc;
+            }
+            when <bcc before body cc from keyword larger on sentbefore senton sentsince since smaller subject text to uid unkeyword> {
+                $output ~= " " ~ $k.uc ~ " $v";
+            }
+            when 'header' {
+                $output ~= " HEADER $v[0] $v[1]";
+            }
+        }
+    }
+    return $output;
 }
 
+method uid-fetch($seq, $items) {
+    return self.send("UID FETCH $seq ({ $items.join(' ') })");
+}
 method fetch($seq, $items) {
-    die "NYI";
+    return self.send("FETCH $seq ({ $items.join(' ') })");
 }
 
-method store(*@args) {
-    die "NYI";
+method uid-store($seq, $action, $values) {
+    return self.send("UID STORE $seq $action ({ $values.join(' ') })");
+}
+method store($seq, $action, $values) {
+    return self.send("STORE $seq $action ({ $values.join(' ') })");
 }
 
-method copy(*@args) {
-    die "NYI";
+method uid-copy($seq, $mbox) {
+    return self.send("UID COPY $seq $mbox");
 }
-
-method uid {
-    die "NYI";
+method copy($seq, $mbox) {
+    return self.send("COPY $seq $mbox");
 }
