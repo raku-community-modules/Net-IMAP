@@ -1,6 +1,7 @@
 class Net::IMAP;
 
 use Net::IMAP::Raw;
+use Net::IMAP::Simple;
 
 method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET) {
     my role debug-connection {
@@ -21,6 +22,6 @@ method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET) 
         $conn = $conn but debug-connection if $debug;
         return Net::IMAP::Raw.new(:$conn);
     } else {
-        die "Simple mode NYI";
+        return Net::IMAP::Simple.new(raw => Net::IMAP.new(:$server, :$port, :$debug, :$socket, :raw));
     }
 }
