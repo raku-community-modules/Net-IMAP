@@ -1,6 +1,9 @@
 class Net::IMAP::Simple;
 
+use Net::IMAP::Message;
+
 has $.raw;
+has $.mailbox;
 
 method new(:$raw!){
     my $self = self.bless(:$raw);
@@ -28,6 +31,7 @@ method search(*%params) {
 }
 
 method select($mailbox) {
+    $.mailbox = $mailbox;
     die "NYI";
 }
 
@@ -56,5 +60,9 @@ method unsubscribe($mailbox) {
 }
 
 method mailboxes {
+    die "NYI";
+}
+
+method append($message) {
     die "NYI";
 }
