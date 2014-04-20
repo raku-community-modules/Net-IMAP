@@ -32,31 +32,38 @@ method search(*%params) {
 
 method select($mailbox) {
     $.mailbox = $mailbox;
-    die "NYI";
+    $.raw.select($mailbox);
+    return True;
 }
 
 method authenticate($user, $pass) {
-    die "NYI";
+    $.raw.login($user, $pass);
+    return True;
 }
 
 method create($mailbox) {
-    die "NYI";
+    $.raw.create($mailbox);
+    return True;
 }
 
-method remove($mailbox) {
-    die "NYI";
+method delete($mailbox) {
+    $.raw.delete($mailbox);
+    return True;
 }
 
-method rename($mailbox) {
-    die "NYI";
+method rename($old, $new) {
+    $.raw.rename($old, $new);
+    return True;
 }
 
 method subscribe($mailbox) {
-    die "NYI";
+    $.raw.subscribe($mailbox);
+    return True;
 }
 
 method unsubscribe($mailbox) {
-    die "NYI";
+    $.raw.unsubscribe($mailbox);
+    return True;
 }
 
 method mailboxes {
@@ -64,5 +71,15 @@ method mailboxes {
 }
 
 method append($message) {
-    die "NYI";
+    $.raw.append($.mailbox, ~$message);
+    return True;
+}
+
+method copy($mailbox, :$sid, :$uid) {
+    if(:$uid){
+        $.raw.uid-copy($uid, $mailbox);
+    } else {
+        $.raw.copy($sid, $mailbox);
+    }
+    return True;
 }
