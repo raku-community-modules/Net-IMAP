@@ -18,3 +18,43 @@ method quit {
     return True;
 }
 method logout { self.quit }
+
+method get-message(:$uid, :$sid) {
+    die "NYI";
+}
+
+method search(*%params) {
+    die "NYI";
+}
+
+method select($mailbox) {
+    die "NYI";
+}
+
+method authenticate($user, $pass) {
+    die "NYI";
+}
+
+method create($mailbox) {
+    die "NYI";
+}
+
+method remove($mailbox) {
+    die "NYI";
+}
+
+method rename($mailbox) {
+    die "NYI";
+}
+
+method subscribe($mailbox) {
+    die "NYI";
+}
+
+method unsubscribe($mailbox) {
+    die "NYI";
+}
+
+method mailboxes {
+    die "NYI";
+}
