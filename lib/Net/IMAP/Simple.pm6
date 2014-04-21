@@ -23,11 +23,20 @@ method quit {
 method logout { self.quit }
 
 method get-message(:$uid, :$sid) {
-    die "NYI";
+    if $uid {
+        return Net::IMAP::Message.new(:imap(self), :mailbox($.mailbox), :$uid);
+    } else {
+        return Net::IMAP::Message.new(:imap(self), :mailbox($.mailbox), :$sid);
+    }
 }
 
 method search(*%params) {
-    die "NYI";
+    my $resp = $.raw.search(|%params);
+    my @lines = $resp.split("\r\n");
+    @lines .= grep(/^\*\s+SEARCH/);
+    my @messages = @lines[0].comb(/\d+/);
+    @messages .= map({ Net::IMAP::Message.new(:imap(self), :mailbox($.mailbox), :sid($_)) });
+    return @messages;
 }
 
 method select($mailbox) {
@@ -72,14 +81,5 @@ method mailboxes {
 
 method append($message) {
     $.raw.append($.mailbox, ~$message);
-    return True;
-}
-
-method copy($mailbox, :$sid, :$uid) {
-    if(:$uid){
-        $.raw.uid-copy($uid, $mailbox);
-    } else {
-        $.raw.copy($sid, $mailbox);
-    }
     return True;
 }

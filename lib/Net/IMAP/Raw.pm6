@@ -126,7 +126,7 @@ method !generate-search-query(%query) {
     for %query.kv -> $k, $v {
         next unless $v;
         given $k {
-            when 'seq' {
+            when <seq sid> {
                 $output ~= " $v";
             }
             when 'not' {
