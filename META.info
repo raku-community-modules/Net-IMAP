@@ -3,7 +3,7 @@
     "version" : "1.0.0",
     "author" : "github:retupmoca",
     "description" : "Simple IMAP Client",
-    "depends" : [ ],
+    "depends" : [ "Email::MIME" ],
     "provides" : {
         "Net::IMAP" : "lib/Net/IMAP.pm6"
     },
