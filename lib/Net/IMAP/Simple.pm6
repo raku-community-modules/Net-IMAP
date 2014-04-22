@@ -75,8 +75,21 @@ method unsubscribe($mailbox) {
     return True;
 }
 
-method mailboxes {
-    die "NYI";
+method mailboxes(:$subscribed) {
+    my $resp;
+    if $subscribed {
+        $resp = $.raw.lsub('""', '*');
+    } else {
+        $resp = $.raw.list('""', '*');
+    }
+    my @lines = $resp.split("\r\n");
+    my @boxes;
+    for @lines {
+        if /^\*\s+L...\s+\(\)\s+\S+\s+(.+)$/ {
+            @boxes.push($0.Str);
+        }
+    }
+    return @boxes;
 }
 
 method append($message) {

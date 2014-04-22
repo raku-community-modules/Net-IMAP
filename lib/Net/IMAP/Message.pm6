@@ -27,7 +27,29 @@ method mime-headers {
 }
 
 method data {
-    die "NYI";
+    my $resp;
+    if $!uid {
+        $resp = $.imap.raw.uid-fetch($!uid, "BODY[]");
+    } else {
+        $resp = $.imap.raw.fetch($!sid, "BODY[]");
+    }
+
+    my @lines = $resp.split("\r\n");
+    my $bytes;
+    my $seenbytes;
+    my $data;
+    for @lines {
+        if /^\* \s+ \d+ \s+ FETCH .+ BODY\[\] \s+ \{(\d+)\}/ {
+            $bytes = $0.Int;
+        }
+        if $bytes {
+            if $seenbytes >= $bytes {
+                return $data;
+            }
+            $seenbytes += $_.chars + 2; # include \r\n line ending
+            $data ~= $_ ~ "\r\n";
+        }
+    }
 }
 
 method mime {
@@ -36,14 +58,18 @@ method mime {
 
 method uid {
     unless $!uid {
-        die "NYI";
+        my $resp = $.imap.raw.fetch($!sid, "UID");
+        $resp ~~ /\* \s+ \d+ \s+ FETCH .+ UID \s+ (\d+)/;
+        $!uid = $0.Int;
     }
     return $!uid;
 }
 
 method sid {
     unless $!sid {
-        die "NYI";
+        my $resp = $.imap.raw.uid-fetch($!uid, "UID");
+        $resp ~~ /\* \s+ (\d+) \s+ FETCH .+ UID \s+/;
+        $!sid = $0.Int;
     }
     return $!sid;
 }
