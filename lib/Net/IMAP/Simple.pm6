@@ -40,7 +40,7 @@ method search(*%params) {
 }
 
 method select($mailbox) {
-    $.mailbox = $mailbox;
+    $!mailbox = $mailbox;
     $.raw.select($mailbox);
     return True;
 }

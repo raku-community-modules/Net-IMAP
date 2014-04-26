@@ -27,29 +27,33 @@ method mime-headers {
 }
 
 method data {
-    my $resp;
-    if $!uid {
-        $resp = $.imap.raw.uid-fetch($!uid, "BODY[]");
-    } else {
-        $resp = $.imap.raw.fetch($!sid, "BODY[]");
-    }
+    unless $!data {
+        my $resp;
+        if $!uid {
+            $resp = $.imap.raw.uid-fetch($!uid, "BODY[]");
+        } else {
+            $resp = $.imap.raw.fetch($!sid, "BODY[]");
+        }
 
-    my @lines = $resp.split("\r\n");
-    my $bytes;
-    my $seenbytes;
-    my $data;
-    for @lines {
-        if /^\* \s+ \d+ \s+ FETCH .+ BODY\[\] \s+ \{(\d+)\}/ {
-            $bytes = $0.Int;
-        }
-        if $bytes {
-            if $seenbytes >= $bytes {
-                return $data;
+        my @lines = $resp.split("\r\n");
+        my $bytes;
+        my $seenbytes;
+        my $data;
+        for @lines {
+            if /^\* \s+ \d+ \s+ FETCH .+ BODY\[\] \s+ \{(\d+)\}/ {
+                $bytes = $0.Int;
             }
-            $seenbytes += $_.chars + 2; # include \r\n line ending
-            $data ~= $_ ~ "\r\n";
+            if $bytes {
+                if $seenbytes >= $bytes {
+                    $!data = $data;
+                    return $!data;
+                }
+                $seenbytes += $_.chars + 2; # include \r\n line ending
+                $data ~= $_ ~ "\r\n";
+            }
         }
     }
+    return $!data;
 }
 
 method mime {

@@ -126,7 +126,7 @@ method !generate-search-query(%query) {
     for %query.kv -> $k, $v {
         next unless $v;
         given $k {
-            when <seq sid> {
+            when any(<seq sid>) {
                 $output ~= " $v";
             }
             when 'not' {
@@ -136,10 +136,10 @@ method !generate-search-query(%query) {
                 $output ~= " OR ({ self!generate-search-query($v[0]) })";
                 $output ~= " ({ self!generate-search-query($v[1]) })";
             }
-            when <all answered deleted draft flagged new old recent seen unanswered undeleted undraft unflagged unseen> {
+            when any(<all answered deleted draft flagged new old recent seen unanswered undeleted undraft unflagged unseen>) {
                 $output ~= " " ~ $k.uc;
             }
-            when <bcc before body cc from keyword larger on sentbefore senton sentsince since smaller subject text to uid unkeyword> {
+            when any(<bcc before body cc from keyword larger on sentbefore senton sentsince since smaller subject text to uid unkeyword>) {
                 $output ~= " " ~ $k.uc ~ " $v";
             }
             when 'header' {
