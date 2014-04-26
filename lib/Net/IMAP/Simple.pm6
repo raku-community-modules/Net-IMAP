@@ -85,8 +85,9 @@ method mailboxes(:$subscribed) {
     my @lines = $resp.split("\r\n");
     my @boxes;
     for @lines {
-        if /^\*\s+L...\s+\(\)\s+\S+\s+(.+)$/ {
-            @boxes.push($0.Str);
+        if /^\*\s+L...\s+\((.*?)\)\s+\S+\s+(.+)$/ {
+            my $flags = $0.Str;
+            @boxes.push($1.Str);
         }
     }
     return @boxes;
