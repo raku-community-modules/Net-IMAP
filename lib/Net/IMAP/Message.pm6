@@ -28,6 +28,9 @@ method mime-headers {
 
 method data {
     unless $!data {
+        if $.mailbox ne $.imap.mailbox {
+            fail "Mailbox changed";
+        }
         my $resp;
         if $!uid {
             $resp = $.imap.raw.uid-fetch($!uid, "BODY[]");
@@ -57,11 +60,16 @@ method data {
 }
 
 method mime {
-    return Email::MIME.new(self.data);
+    my $data = self.data;
+    return $data unless defined $data;
+    return Email::MIME.new($data);
 }
 
 method uid {
     unless $!uid {
+        if $.mailbox ne $.imap.mailbox {
+            fail "Mailbox changed";
+        }
         my $resp = $.imap.raw.fetch($!sid, "UID");
         $resp ~~ /\* \s+ \d+ \s+ FETCH .+ UID \s+ (\d+)/;
         $!uid = $0.Int;
@@ -71,6 +79,9 @@ method uid {
 
 method sid {
     unless $!sid {
+        if $.mailbox ne $.imap.mailbox {
+            fail "Mailbox changed";
+        }
         my $resp = $.imap.raw.uid-fetch($!uid, "UID");
         $resp ~~ /\* \s+ (\d+) \s+ FETCH .+ UID \s+/;
         $!sid = $0.Int;
@@ -80,6 +91,9 @@ method sid {
 
 multi method flags {
     unless @!flags {
+        if $.mailbox ne $.imap.mailbox {
+            fail "Mailbox changed";
+        }
         my $resp;
         if $!uid {
             $resp = $.imap.raw.uid-fetch($!uid, "FLAGS");
@@ -95,6 +109,9 @@ multi method flags {
 }
 
 multi method flags(@new) {
+    if $.mailbox ne $.imap.mailbox {
+        fail "Mailbox changed";
+    }
     @!flags = @new;
     if $!uid {
         $.imap.raw.uid-store($!uid, 'FLAGS.SILENT', @new);
@@ -105,6 +122,9 @@ multi method flags(@new) {
 }
 
 method delete {
+    if $.mailbox ne $.imap.mailbox {
+        fail "Mailbox changed";
+    }
     my @flags = self.flags;
     @flags.push('\Deleted') unless @flags.grep(/\\Deleted/);
     self.flags(@flags);
@@ -113,6 +133,9 @@ method delete {
 }
 
 method copy($mailbox) {
+    if $.mailbox ne $.imap.mailbox {
+        fail "Mailbox changed";
+    }
     if $!uid {
         $.imap.raw.uid-copy($!uid, $mailbox);
     } else {
