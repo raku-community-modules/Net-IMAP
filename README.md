@@ -3,9 +3,6 @@ P6-Net-IMAP
 
 An IMAP client library.
 
-Note that the simple interface currently doesn't catch errors from the server;
-it just assumes everything went as expected.
-
 ## Example Usage ##
 
     my $i = Net::IMAP.new(:$server);

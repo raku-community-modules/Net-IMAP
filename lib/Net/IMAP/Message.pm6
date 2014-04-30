@@ -37,6 +37,7 @@ method data {
         } else {
             $resp = $.imap.raw.fetch($!sid, "BODY[]");
         }
+        fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
 
         my @lines = $resp.split("\r\n");
         my $bytes;
@@ -71,6 +72,7 @@ method uid {
             fail "Mailbox changed";
         }
         my $resp = $.imap.raw.fetch($!sid, "UID");
+        fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
         $resp ~~ /\* \s+ \d+ \s+ FETCH .+ UID \s+ (\d+)/;
         $!uid = $0.Int;
     }
@@ -83,6 +85,7 @@ method sid {
             fail "Mailbox changed";
         }
         my $resp = $.imap.raw.uid-fetch($!uid, "UID");
+        fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
         $resp ~~ /\* \s+ (\d+) \s+ FETCH .+ UID \s+/;
         $!sid = $0.Int;
     }
@@ -100,6 +103,7 @@ multi method flags {
         } else {
             $resp = $.imap.raw.fetch($!sid, "FLAGS");
         }
+        fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
         my @lines = $resp.split("\r\n");
         @lines .= grep(/^\*\s+\d+\s+FETCH/);
         @lines[0] ~~ /FLAGS\s+\((<-[\)]>*)\)/;
@@ -113,11 +117,13 @@ multi method flags(@new) {
         fail "Mailbox changed";
     }
     @!flags = @new;
+    my $resp;
     if $!uid {
-        $.imap.raw.uid-store($!uid, 'FLAGS.SILENT', @new);
+        $resp = $.imap.raw.uid-store($!uid, 'FLAGS.SILENT', @new);
     } else {
-        $.imap.raw.store($!sid, 'FLAGS.SILENT', @new);
+        $resp = $.imap.raw.store($!sid, 'FLAGS.SILENT', @new);
     }
+    fail "Bad store" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
@@ -127,7 +133,8 @@ method delete {
     }
     my @flags = self.flags;
     @flags.push('\Deleted') unless @flags.grep(/\\Deleted/);
-    self.flags(@flags);
+    my $result = self.flags(@flags);
+    return $result unless $result;
     $.imap.raw.expunge;
     return True;
 }
@@ -136,10 +143,12 @@ method copy($mailbox) {
     if $.mailbox ne $.imap.mailbox {
         fail "Mailbox changed";
     }
+    my $resp;
     if $!uid {
-        $.imap.raw.uid-copy($!uid, $mailbox);
+        $resp = $.imap.raw.uid-copy($!uid, $mailbox);
     } else {
-        $.imap.raw.copy($!sid, $mailbox);
+        $resp = $.imap.raw.copy($!sid, $mailbox);
     }
+    fail "Bad copy" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }

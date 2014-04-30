@@ -10,6 +10,8 @@ method new(:$raw!){
     
     my $greeting = $self.raw.get-response;
 
+    fail "Bad greeting" unless $greeting ~~ /^\*\s+[OK|PREAUTH]/;
+
     # capabilities list, etc...
 
     return $self;
@@ -32,8 +34,9 @@ method get-message(:$uid, :$sid) {
 
 method search(*%params) {
     my $resp = $.raw.search(|%params);
+    fail "Bad search" unless $resp ~~ /\w+\hOK\N+$/;
     my @lines = $resp.split("\r\n");
-    @lines .= grep(/^\*\s+SEARCH/);
+    @lines .= grep(/^\*\h+SEARCH/);
     my @messages = @lines[0].comb(/\d+/);
     @messages .= map({ Net::IMAP::Message.new(:imap(self), :mailbox($.mailbox), :sid($_)) });
     return @messages;
@@ -41,37 +44,44 @@ method search(*%params) {
 
 method select($mailbox) {
     $!mailbox = $mailbox;
-    $.raw.select($mailbox);
+    my $resp = $.raw.select($mailbox);
+    fail "Bad select" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method authenticate($user, $pass) {
-    $.raw.login($user, $pass);
+    my $resp = $.raw.login($user, $pass);
+    fail "Bad authenticate" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method create($mailbox) {
-    $.raw.create($mailbox);
+    my $resp = $.raw.create($mailbox);
+    fail "Bad create" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method delete($mailbox) {
-    $.raw.delete($mailbox);
+    my $resp = $.raw.delete($mailbox);
+    fail "Bad delete" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method rename($old, $new) {
-    $.raw.rename($old, $new);
+    my $resp = $.raw.rename($old, $new);
+    fail "Bad rename" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method subscribe($mailbox) {
-    $.raw.subscribe($mailbox);
+    my $resp = $.raw.subscribe($mailbox);
+    fail "Bad subscribe" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
 method unsubscribe($mailbox) {
-    $.raw.unsubscribe($mailbox);
+    my $resp = $.raw.unsubscribe($mailbox);
+    fail "Bad unsubscribe" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
 
@@ -82,6 +92,7 @@ method mailboxes(:$subscribed) {
     } else {
         $resp = $.raw.list('""', '*');
     }
+    fail "Bad mailbox list" unless $resp ~~ /\w+\hOK\N+$/;
     my @lines = $resp.split("\r\n");
     my @boxes;
     for @lines {
@@ -94,6 +105,7 @@ method mailboxes(:$subscribed) {
 }
 
 method append($message) {
-    $.raw.append($.mailbox, ~$message);
+    my $resp = $.raw.append($.mailbox, ~$message);
+    fail "Bad append" unless $resp ~~ /\w+\hOK\N+$/;
     return True;
 }
