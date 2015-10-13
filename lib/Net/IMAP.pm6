@@ -20,7 +20,7 @@ method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET) 
         my $conn = $socket.defined ?? $socket !! $socket.new(:host($server), :$port);
         $conn.input-line-separator = "\r\n";
         $conn = $conn but debug-connection if $debug;
-        return Net::IMAP::Raw.new(:$conn);
+        return Net::IMAP::Raw.new(:conn($conn));
     } else {
         return Net::IMAP::Simple.new(raw => Net::IMAP.new(:$server, :$port, :$debug, :$socket, :raw));
     }
