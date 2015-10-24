@@ -5,8 +5,9 @@ use Net::IMAP::Message;
 has $.raw;
 has $.mailbox;
 
-method new(:$raw!){
+method new(:$raw!, :$ssl){
     my $self = self.bless(:$raw);
+    $self.raw.switch-to-ssl() if $ssl;
     
     my $greeting = $self.raw.get-response;
 
