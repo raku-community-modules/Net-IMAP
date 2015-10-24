@@ -28,6 +28,10 @@ method switch-to-ssl() {
     $!conn.input-line-separator = "\r\n";
 }
 
+method starttls {
+    return self.send('STARTTLS');
+}
+
 method capability {
     return self.send('CAPABILITY');
 }

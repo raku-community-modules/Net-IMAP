@@ -3,7 +3,7 @@ unit class Net::IMAP;
 use Net::IMAP::Raw;
 use Net::IMAP::Simple;
 
-method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET, :$ssl) {
+method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET, :$ssl, :$tls, :$plain) {
     my role debug-connection {
         method send($string){
             my $tmpline = $string.substr(0, *-2);
@@ -22,6 +22,6 @@ method new(:$server, :$port = 143, :$debug, :$raw, :$socket = IO::Socket::INET, 
         $conn = $conn but debug-connection if $debug;
         return Net::IMAP::Raw.new(:conn($conn));
     } else {
-        return Net::IMAP::Simple.new(:$ssl, raw => Net::IMAP.new(:$server, :$port, :$debug, :$socket, :raw));
+        return Net::IMAP::Simple.new(:$ssl, :$tls, :$plain, raw => Net::IMAP.new(:$server, :$port, :$debug, :$socket, :raw));
     }
 }
