@@ -15,7 +15,7 @@ An IMAP client library.
 
 ## Simple interface methods ##
 
- -  `new(:$server, :$port = 143, :$debug, :$socket, :$ssl, :$tls, :$plain)`
+ -  `new(:$server, :$port = 143, :$debug, :$socket, :$ssl, :$starttls, :$plain)`
 
  -  `authenticate($user, $pass)`
 
