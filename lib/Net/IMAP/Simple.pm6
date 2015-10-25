@@ -22,6 +22,9 @@ method new(:$raw!, :$ssl, :$tls, :$plain){
                 $raw.switch-to-ssl;
                 @capabilities = self.get_capabilities($raw);
             }
+            elsif $tls {
+                fail "STARTTLS failed: " ~ $resp;
+            }
         }
     }
     else {
