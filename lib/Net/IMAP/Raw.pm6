@@ -124,10 +124,10 @@ method expunge {
 }
 
 method uid-search(*%query) {
-    return self.send("UID SEARCH "~self!generate-search-query(%query));
+    return self.send("UID SEARCH"~self!generate-search-query(%query));
 }
 method search(*%query) {
-    return self.send("SEARCH "~self!generate-search-query(%query));
+    return self.send("SEARCH"~self!generate-search-query(%query));
 }
 method !generate-search-query(%query) {
     my $output;
