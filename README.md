@@ -1,4 +1,4 @@
-P6-Net-IMAP
+Net-IMAP
 ===========
 
 An IMAP client library.
