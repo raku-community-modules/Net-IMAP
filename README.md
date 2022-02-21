@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/raku-community-modules/Net-IMAP/workflows/test/badge.svg)](https://github.com/raku-community-modules/Net-IMAP/actions)
+
 Net-IMAP
 ===========
 
@@ -118,3 +120,20 @@ An IMAP client library.
  -  `uid-copy($seq, $mbox)`
 
  -  `copy($seq, $mbox)`
+
+
+AUTHOR
+=======
+
+Andrew Egeler
+
+Source can be located at: https://github.com/raku-community-modules/Net-IMAP . Comments and Pull Requests are welcome.
+
+COPYRIGHT AND LICENSE
+=====================
+
+Copyright 2014 - 2018 Andrew Egeler
+
+Copyright 2019 - 2022 Raku Community
+
+All files in this repository are licensed under the terms of Create Commons License; for details please see the LICENSE file

@@ -1,6 +1,6 @@
-unit class Net::IMAP::Message;
-
 use Email::MIME;
+
+unit class Net::IMAP::Message;
 
 has $.imap;
 has $.mailbox;
@@ -21,12 +21,12 @@ method _init($sid, $uid) {
     $!uid = $uid if $uid;
 }
 
-method mime-headers {
+method mime-headers() {
     # XXX Very inefficient
-    return self.mime.header-obj;
+    self.mime.header-obj
 }
 
-method data {
+method data() {
     unless $!data {
         if $.mailbox ne $.imap.mailbox {
             fail "Mailbox changed";
@@ -34,7 +34,8 @@ method data {
         my $resp;
         if $!uid {
             $resp = $.imap.raw.uid-fetch($!uid, "BODY[]");
-        } else {
+        }
+        else {
             $resp = $.imap.raw.fetch($!sid, "BODY[]");
         }
         fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
@@ -58,46 +59,44 @@ method data {
             }
         }
     }
-    return $!data;
+    $!data
 }
 
-method mime {
-    my $data = self.data;
-    return $data unless defined $data;
-    return Email::MIME.new($data);
+method mime() {
+    my $data := self.data;
+    $data.defined
+      ?? Email::MIME.new($data)
+      !! $data
 }
 
-method uid {
+method uid() {
     unless $!uid {
-        if $.mailbox ne $.imap.mailbox {
-            fail "Mailbox changed";
-        }
-        my $resp = $.imap.raw.fetch($!sid, "UID");
+        fail "Mailbox changed" if $.mailbox ne $.imap.mailbox;
+
+        my $resp := $.imap.raw.fetch($!sid, "UID");
         fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
         $resp ~~ /\* \s+ \d+ \s+ FETCH .+ UID \s+ (\d+)/;
         $!uid = $0.Int;
     }
-    return $!uid;
+    $!uid
 }
 
-method sid {
+method sid() {
     unless $!sid {
-        if $.mailbox ne $.imap.mailbox {
-            fail "Mailbox changed";
-        }
-        my $resp = $.imap.raw.uid-fetch($!uid, "UID");
+        fail "Mailbox changed" if $.mailbox ne $.imap.mailbox;
+
+        my $resp := $.imap.raw.uid-fetch($!uid, "UID");
         fail "Bad fetch" unless $resp ~~ /\w+\hOK\N+$/;
         $resp ~~ /\* \s+ (\d+) \s+ FETCH .+ UID \s+/;
         $!sid = $0.Int;
     }
-    return $!sid;
+    $!sid
 }
 
-multi method flags {
+multi method flags() {
     unless @!flags {
-        if $.mailbox ne $.imap.mailbox {
-            fail "Mailbox changed";
-        }
+        fail "Mailbox changed" if $.mailbox ne $.imap.mailbox:
+
         my $resp;
         if $!uid {
             $resp = $.imap.raw.uid-fetch($!uid, "FLAGS");
@@ -110,7 +109,7 @@ multi method flags {
         @lines[0] ~~ /FLAGS\s+\((<-[\)]>*)\)/;
         @!flags = $0.Str.words;
     }
-    return @!flags;
+    @!flags
 }
 
 multi method flags(@new) {
@@ -128,22 +127,20 @@ multi method flags(@new) {
     return True;
 }
 
-method delete {
-    if $.mailbox ne $.imap.mailbox {
-        fail "Mailbox changed";
-    }
+method delete() {
+    fail "Mailbox changed" if $.mailbox ne $.imap.mailbox;
+
     my @flags = self.flags;
     @flags.push('\Deleted') unless @flags.grep(/\\Deleted/);
-    my $result = self.flags(@flags);
+    my $result := self.flags(@flags);
     return $result unless $result;
     $.imap.raw.expunge;
-    return True;
+    True
 }
 
 method copy($mailbox) {
-    if $.mailbox ne $.imap.mailbox {
-        fail "Mailbox changed";
-    }
+    fail "Mailbox changed" if $.mailbox ne $.imap.mailbox;
+
     my $resp;
     if $!uid {
         $resp = $.imap.raw.uid-copy($!uid, $mailbox);
@@ -151,5 +148,7 @@ method copy($mailbox) {
         $resp = $.imap.raw.copy($!sid, $mailbox);
     }
     fail "Bad copy" unless $resp ~~ /\w+\hOK\N+$/;
-    return True;
+    True
 }
+
+# vim: expandtab shiftwidth=4
