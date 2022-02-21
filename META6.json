@@ -1,16 +1,28 @@
 {
-    "auth" : "zef:raku-community-modules",
-    "perl" : "6.*",
-    "name" : "Net::IMAP",
-    "version" : "1.0.2",
-    "author" : "Andrew Egeler",
-    "description" : "Simple IMAP Client",
-    "depends" : [ "Email::MIME", "IO::Socket::SSL" ],
-    "provides" : {
-        "Net::IMAP"          : "lib/Net/IMAP.rakumod",
-        "Net::IMAP::Raw"     : "lib/Net/IMAP/Raw.rakumod",
-        "Net::IMAP::Simple"  : "lib/Net/IMAP/Simple.rakumod",
-        "Net::IMAP::Message" : "lib/Net/IMAP/Message.rakumod"
-    },
-    "source-url" : "git://github.com/retupmoca/P6-Net-IMAP.git"
+  "auth": "zef:raku-community-modules",
+  "author": "Andrew Egeler",
+  "build-depends": [
+  ],
+  "depends": [
+    "Email::MIME",
+    "IO::Socket::SSL"
+  ],
+  "description": "Simple IMAP Client",
+  "license": "NOASSERTION",
+  "name": "Net::IMAP",
+  "perl": "6.*",
+  "provides": {
+    "Net::IMAP": "lib/Net/IMAP.rakumod",
+    "Net::IMAP::Message": "lib/Net/IMAP/Message.rakumod",
+    "Net::IMAP::Raw": "lib/Net/IMAP/Raw.rakumod",
+    "Net::IMAP::Simple": "lib/Net/IMAP/Simple.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "git://github.com/retupmoca/P6-Net-IMAP.git",
+  "tags": [
+  ],
+  "test-depends": [
+  ],
+  "version": "1.0.2"
 }
