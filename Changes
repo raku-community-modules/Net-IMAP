@@ -1,6 +1,8 @@
 Revision history for Net::IMAP
 
 {{$NEXT}}
+
+1.0.3  2024-11-30T19:08:36+01:00
     - Add CI badge for each OS
     - Fix source-url
 

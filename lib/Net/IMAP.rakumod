@@ -1,7 +1,7 @@
 use Net::IMAP::Raw;
 use Net::IMAP::Simple;
 
-unit class Net::IMAP:ver<1.0.2>:auth<zef:raku-community-modules>;
+unit class Net::IMAP:ver<1.0.3>:auth<zef:raku-community-modules>;
 
 method new(
   Str  :$server,
