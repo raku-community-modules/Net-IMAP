@@ -19,7 +19,7 @@
   },
   "resources": [
   ],
-  "source-url": "git://github.com/retupmoca/P6-Net-IMAP.git",
+  "source-url": "https://github.com/raku-community-modules/Net-IMAP.git",
   "tags": [
   ],
   "test-depends": [

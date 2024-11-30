@@ -1,6 +1,8 @@
 Revision history for Net::IMAP
 
 {{$NEXT}}
+    - Add CI badge for each OS
+    - Fix source-url
 
 1.0.2  2022-02-21T20:00:15+01:00
     - First version in zef ecosystem
